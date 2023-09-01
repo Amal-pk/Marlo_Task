@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+
+  final List<String> img = [
+    'asset/Group 1000001639.svg',
+    'asset/Group 1000001685.svg',
+    'asset/Group 1000001638.svg',
+    "asset/Group 1000001637.svg",
+  ];
+  final List<String> txt = [
+    'Verify your business documents',
+    'Verify your identity',
+    'Open a Marlo business account',
+    "Get prequalified",
+  ];
+  final List<Color> clr1 = [
+    const Color.fromARGB(255, 251, 251, 251),
+    const Color.fromARGB(255, 251, 251, 251),
+    const Color.fromARGB(255, 251, 251, 251),
+    const Color.fromARGB(255, 251, 251, 251),
+  ];
+  final List<Color> clr2 = [
+    Color.fromARGB(255, 198, 64, 251).withOpacity(1),
+    Colors.amber.withOpacity(1),
+    Colors.green.withOpacity(0.8),
+    Colors.blue.withOpacity(0.8),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +78,7 @@ class HomePage extends StatelessWidget {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.grey,
                           blurRadius: 2,
@@ -99,46 +125,13 @@ class HomePage extends StatelessWidget {
               shrinkWrap: true,
               primary: false,
               scrollDirection: Axis.horizontal,
-              itemCount: 10,
+              itemCount: img.length,
               itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      CircleAvatar(
-                        radius: 30,
-                        backgroundColor: Colors.amber,
-                      ),
-                      Text(
-                        "1223568484656164",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Country Name",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      )
-                    ],
-                  ),
+                return CustomContainer(
+                  clr1: clr1[index],
+                  clr2: clr2[index],
+                  img: img[index],
+                  title: txt[index],
                 );
               },
             ),
@@ -156,9 +149,67 @@ class HomePage extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {},
-                child: Text("See all"),
+                child: const Text("See all"),
               ),
             ],
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            primary: false,
+            itemBuilder: (context, index) {
+              return Card(
+                child: ListTile(),
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class CustomContainer extends StatelessWidget {
+  const CustomContainer({
+    super.key,
+    required this.clr1,
+    required this.clr2,
+    required this.img,
+    required this.title,
+  });
+  final Color clr1;
+  final Color clr2;
+  final String img;
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
+      width: 150,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [clr1, clr2],
+          end: Alignment.bottomCenter,
+          begin: Alignment.topCenter,
+        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            blurRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(img),
+          Text(
+            title,
+            maxLines: 3,
+            textAlign: TextAlign.center,
           )
         ],
       ),
