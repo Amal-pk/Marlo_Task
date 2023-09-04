@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:marlo_task/View/home_page.dart';
+import 'package:marlo_task/Mobile/Controller/bottom_navigation_controller.dart';
+import 'package:marlo_task/Mobile/View/bottom_navigation_bar.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,12 +12,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => BottomNavigationBarController(),
+        )
+      ],
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomePage());
+        home: BottomNavigationScreen(),
+      ),
+    );
   }
 }
