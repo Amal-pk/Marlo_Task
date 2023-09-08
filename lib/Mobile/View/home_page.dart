@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:marlo_task/Mobile/Controller/home_controller.dart';
 import 'package:marlo_task/Mobile/View/all_transaction.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -32,6 +34,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<HomeController>(context);
+    WidgetsBinding.instance.addPostFrameCallback(((timeStamp) {
+      controller.init();
+    }));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -170,14 +176,14 @@ class HomePage extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 primary: false,
-                itemCount: 10,
+                itemCount: controller.data.length,
                 itemBuilder: (context, index) {
-                  return const Card(
+                  return Card(
                     child: ListTile(
                       leading: CircleAvatar(),
-                      title: Text("Rent"),
+                      title: Text(controller.data[index].status),
                       subtitle: Text("3014025"),
-                      trailing: Text("5646"),
+                      trailing: Text(controller.data[index].status),
                     ),
                   );
                 },
