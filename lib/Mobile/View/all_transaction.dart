@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:marlo_task/Mobile/Controller/home_controller.dart';
+import 'package:marlo_task/model/model.dart';
 import 'package:provider/provider.dart';
 
 class AllTransaction extends StatelessWidget {
-  const AllTransaction({super.key});
-
+  const AllTransaction({super.key, required this.data});
+  final List<TransactionModel> data;
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<HomeController>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -100,20 +102,66 @@ class AllTransaction extends StatelessWidget {
                   ],
                 ),
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const Card(
-                    child: ListTile(
-                      leading: CircleAvatar(),
-                      title: Text("Rent"),
-                      subtitle: Text("3014025"),
-                      trailing: Text("5646"),
-                    ),
-                  );
-                },
+              Visibility(
+                visible: controller.items.isNotEmpty,
+                replacement: SizedBox(),
+                child: SizedBox(
+                  height: 50,
+                  child: ListView.builder(
+                    itemCount: controller.items.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                        ),
+                        child: Row(
+                          children: [
+                            Text(controller.items[index]),
+                            IconButton(
+                                onPressed: () {
+                                  controller.items.remove(index);
+                                },
+                                icon: Icon(Icons.close))
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: data.isNotEmpty,
+                replacement: const Center(child: CircularProgressIndicator()),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  primary: false,
+                  itemCount: data.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        leading: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.indigo[900],
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Icon(
+                            Icons.arrow_downward_outlined,
+                            color: Colors.white,
+                          ),
+                        ),
+                        title: Text(data[index].status),
+                        subtitle: Text(data[index]
+                            .estimatedSettledAt
+                            .toString()
+                            .split("00")
+                            .first),
+                        trailing: Text(
+                          "${data[index].currency} ${data[index].amount}",
+                        ),
+                      ),
+                    );
+                  },
+                ),
               )
             ],
           ),
@@ -175,9 +223,9 @@ class CustomBottomSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Money in and out.2",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                         // letterSpacing: 1,
@@ -294,14 +342,15 @@ class CustomBottomSheet extends StatelessWidget {
                   ],
                 ),
               ),
-            ), Card(
+            ),
+            Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Status.3",
+                      "Time range",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -314,56 +363,47 @@ class CustomBottomSheet extends StatelessWidget {
                           children: [
                             FIlterSubTitles(
                               controller: controller,
-                              items: "Completed",
-                              isTrue: controller.isComplete,
+                              items: "18 Jan-2 Feb",
+                              isTrue: controller.isDate,
                               onTap: () {
-                                controller.isStatus("Completed");
-                                controller.isSelectStatus("Completed");
+                                controller.isTime("18 Jan-2 Feb");
+                                controller.isSelectTime("18 Jan-2 Feb");
                               },
                             ),
                             FIlterSubTitles(
                               controller: controller,
-                              items: "Failed",
-                              isTrue: controller.isFailed,
+                              items: "Today",
+                              isTrue: controller.isToday,
                               onTap: () {
-                                controller.isStatus("Failed");
-                                controller.isSelectStatus("Failed");
+                                controller.isTime("Today");
+                                controller.isSelectTime("Today");
                               },
                             ),
                             FIlterSubTitles(
                               controller: controller,
-                              items: "Declined",
-                              isTrue: controller.isDeclined,
+                              items: "This Week",
+                              isTrue: controller.isWeek,
                               onTap: () {
-                                controller.isStatus("Declined");
-                                controller.isSelectStatus("Declined");
+                                controller.isTime("This Week");
+                                controller.isSelectTime("This Week");
                               },
                             ),
                             FIlterSubTitles(
                               controller: controller,
-                              items: "Pending",
-                              isTrue: controller.isPending,
+                              items: "This Month",
+                              isTrue: controller.isMonth,
                               onTap: () {
-                                controller.isStatus("Pending");
-                                controller.isSelectStatus("Pending");
+                                controller.isTime("This Month");
+                                controller.isSelectTime("This Month");
                               },
                             ),
                             FIlterSubTitles(
                               controller: controller,
-                              items: "Reverted",
-                              isTrue: controller.isReverted,
+                              items: "This quarter",
+                              isTrue: controller.isQuarter,
                               onTap: () {
-                                controller.isStatus("Reverted");
-                                controller.isSelectStatus("Reverted");
-                              },
-                            ),
-                            FIlterSubTitles(
-                              controller: controller,
-                              items: "Cancelled",
-                              isTrue: controller.isCancel,
-                              onTap: () {
-                                controller.isStatus("Cancel");
-                                controller.isSelectStatus("Cancelled");
+                                controller.isTime("This quarter");
+                                controller.isSelectTime("This quarter");
                               },
                             ),
                           ],
@@ -371,6 +411,111 @@ class CustomBottomSheet extends StatelessWidget {
                       },
                     )
                   ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Amount",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      // letterSpacing: 1,
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 150,
+                        height: 50,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          "0",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                            // letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 150,
+                        height: 50,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          "5000",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                            // letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 50,
+                width: double.infinity,
+                alignment: Alignment.center,
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 163, 206, 241),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                      color: Colors.blue),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                controller.isApply();
+                Navigator.pop(context);
+              },
+              child: Container(
+                height: 50,
+                width: double.infinity,
+                alignment: Alignment.center,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  "Apply",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                      color: Colors.white),
                 ),
               ),
             ),

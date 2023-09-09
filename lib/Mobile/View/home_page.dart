@@ -6,7 +6,22 @@ import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-
+  final List<String> img1 = [
+    "asset/download (1).png",
+    "asset/download (2).png",
+    "asset/download (3).png",
+    "asset/download (4).png",
+    "asset/download.jpeg",
+    "asset/download.png",
+  ];
+  final List<String> countryName = [
+    "Maxico",
+    "Italy",
+    "United Kingdom",
+    "France",
+    "United States",
+    "Canada",
+  ];
   final List<String> img = [
     'asset/Group 1000001639.svg',
     'asset/Group 1000001685.svg',
@@ -34,7 +49,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeController>(context);
+    final controller = Provider.of<HomeController>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback(((timeStamp) {
       controller.init();
     }));
@@ -79,7 +94,7 @@ class HomePage extends StatelessWidget {
                   shrinkWrap: true,
                   primary: false,
                   scrollDirection: Axis.horizontal,
-                  itemCount: 10,
+                  itemCount: 6,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.all(10),
@@ -97,12 +112,12 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           CircleAvatar(
                             radius: 30,
-                            backgroundColor: Colors.amber,
+                            backgroundImage: AssetImage(img1[index]),
                           ),
-                          Padding(
+                          const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
                               "1223568484656164",
@@ -113,10 +128,10 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Country Name",
-                            style: TextStyle(
+                            countryName[index],
+                            style: const TextStyle(
                               color: Colors.black,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                             ),
                           )
                         ],
@@ -165,7 +180,9 @@ class HomePage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AllTransaction(),
+                          builder: (context) => AllTransaction(
+                            data: controller.data,
+                          ),
                         ),
                       );
                     },
@@ -173,21 +190,41 @@ class HomePage extends StatelessWidget {
                   ),
                 ],
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: controller.data.length,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      leading: CircleAvatar(),
-                      title: Text(controller.data[index].status),
-                      subtitle: Text("3014025"),
-                      trailing: Text(controller.data[index].status),
-                    ),
-                  );
-                },
-              )
+              Consumer<HomeController>(builder: (context, value, _) {
+                return Visibility(
+                  visible: controller.data.isNotEmpty,
+                  replacement: const Center(child: CircularProgressIndicator()),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: 5,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Colors.indigo[900],
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(
+                              Icons.arrow_downward_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(controller.data[index].status),
+                          subtitle: Text(controller
+                              .data[index].estimatedSettledAt
+                              .toString()
+                              .split("00")
+                              .first),
+                          trailing: Text(
+                              "${controller.data[index].currency} ${controller.data[index].amount}"),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              })
             ],
           ),
         ),

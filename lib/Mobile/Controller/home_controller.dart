@@ -15,8 +15,14 @@ class HomeController extends ChangeNotifier {
           .toList();
     }
     log("List of Datas $data");
+    notifyListeners();
   }
 
+  bool isDate = false;
+  bool isWeek = false;
+  bool isToday = false;
+  bool isMonth = false;
+  bool isQuarter = false;
   bool isMoneyIn = false;
   bool isMoneyOut = false;
   bool isComplete = false;
@@ -26,7 +32,9 @@ class HomeController extends ChangeNotifier {
   bool isDeclined = false;
   bool isReverted = false;
   List<String> items = [];
-
+  String moneyData = "";
+  String statusData = "";
+  String timeData = "";
   isTrue(String inOrOut) {
     if (inOrOut == "Money in") {
       isMoneyIn = !isMoneyIn;
@@ -39,11 +47,8 @@ class HomeController extends ChangeNotifier {
 
   isSelect(String index) {
     if (isMoneyIn == true || isMoneyOut == true) {
-      items.clear();
-      items.add(index);
-    } else {
-      items.remove(index);
-    }
+      moneyData = index;
+    } else {}
     log(items.length.toString());
     notifyListeners();
   }
@@ -92,6 +97,7 @@ class HomeController extends ChangeNotifier {
       isDeclined = false;
       isReverted = false;
     }
+    notifyListeners();
   }
 
   isSelectStatus(String index) {
@@ -101,12 +107,66 @@ class HomeController extends ChangeNotifier {
         isFailed == true ||
         isDeclined == true ||
         isReverted == true) {
-      // items.clear();
-      items.add(index);
-    } else {
-      items.remove(index);
-    }
+      statusData = index;
+    } else {}
+    items.add(index);
     log(items.length.toString());
+    notifyListeners();
+  }
+
+  isTime(String inOrOut) {
+    if (inOrOut == "18 Jan-2 Feb") {
+      isDate = !isDate;
+      isWeek = false;
+      isToday = false;
+      isMonth = false;
+      isQuarter = false;
+    } else if (inOrOut == "Today") {
+      isDate = false;
+      isWeek = false;
+      isToday = !isToday;
+      isMonth = false;
+      isQuarter = false;
+    } else if (inOrOut == "This Week") {
+      isDate = false;
+      isWeek = !isWeek;
+      isToday = false;
+      isMonth = false;
+      isQuarter = false;
+    } else if (inOrOut == "This Month") {
+      isDate = false;
+      isWeek = false;
+      isToday = false;
+      isMonth = !isMonth;
+      isQuarter = false;
+    } else {
+      isDate = false;
+      isWeek = false;
+      isToday = false;
+      isMonth = false;
+      isQuarter = !isQuarter;
+    }
+    notifyListeners();
+  }
+
+  isSelectTime(String index) {
+    if (isDate == true ||
+        isWeek == true ||
+        isToday == true ||
+        isMonth == true ||
+        isQuarter == true) {
+      timeData = index;
+    } else {}
+
+    log(items.length.toString());
+    notifyListeners();
+  }
+
+  isApply() {
+    items.clear();
+    items.add(moneyData);
+    items.add(statusData);
+    items.add(timeData);
     notifyListeners();
   }
 }
