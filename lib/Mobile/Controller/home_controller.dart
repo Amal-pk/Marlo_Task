@@ -169,4 +169,9 @@ class HomeController extends ChangeNotifier {
     items.add(timeData);
     notifyListeners();
   }
+
+  isRemove(int index) {
+    items.removeAt(index);
+    notifyListeners();
+  }
 }

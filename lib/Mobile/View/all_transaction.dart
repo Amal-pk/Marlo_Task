@@ -102,67 +102,83 @@ class AllTransaction extends StatelessWidget {
                   ],
                 ),
               ),
-              Visibility(
-                visible: controller.items.isNotEmpty,
-                replacement: SizedBox(),
-                child: SizedBox(
-                  height: 50,
+              Consumer<HomeController>(builder: (context, value, _) {
+                return Visibility(
+                  visible: controller.items.isNotEmpty,
+                  replacement: const SizedBox(),
+                  child: SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.items.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          height: 50,
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                              color: Colors.blue[100],
+                              borderRadius: BorderRadius.circular(10)),
+                          child: FittedBox(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  controller.items[index],
+                                  style: const TextStyle(
+                                      color: Colors.blue, fontSize: 15),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      controller.isRemove(index);
+                                    },
+                                    icon: const Icon(Icons.close,
+                                        color: Colors.blue))
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              }),
+              Consumer<HomeController>(builder: (context, value, _) {
+                return Visibility(
+                  visible: data.isNotEmpty,
+                  replacement: const Center(child: CircularProgressIndicator()),
                   child: ListView.builder(
-                    itemCount: controller.items.length,
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                        ),
-                        child: Row(
-                          children: [
-                            Text(controller.items[index]),
-                            IconButton(
-                                onPressed: () {
-                                  controller.items.remove(index);
-                                },
-                                icon: Icon(Icons.close))
-                          ],
+                      return Card(
+                        child: ListTile(
+                          leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Colors.indigo[900],
+                                borderRadius: BorderRadius.circular(10)),
+                            child: const Icon(
+                              Icons.arrow_downward_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                          title: Text(data[index].status),
+                          subtitle: Text(data[index]
+                              .estimatedSettledAt
+                              .toString()
+                              .split("00")
+                              .first),
+                          trailing: Text(
+                            "${data[index].currency} ${data[index].amount}",
+                          ),
                         ),
                       );
                     },
                   ),
-                ),
-              ),
-              Visibility(
-                visible: data.isNotEmpty,
-                replacement: const Center(child: CircularProgressIndicator()),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  primary: false,
-                  itemCount: data.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Colors.indigo[900],
-                              borderRadius: BorderRadius.circular(10)),
-                          child: const Icon(
-                            Icons.arrow_downward_outlined,
-                            color: Colors.white,
-                          ),
-                        ),
-                        title: Text(data[index].status),
-                        subtitle: Text(data[index]
-                            .estimatedSettledAt
-                            .toString()
-                            .split("00")
-                            .first),
-                        trailing: Text(
-                          "${data[index].currency} ${data[index].amount}",
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )
+                );
+              })
             ],
           ),
         ),
